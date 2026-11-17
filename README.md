@@ -41,3 +41,11 @@ The regression will show whether patterns by system size persist after accountin
 Keep the source ZIP and CSV local. Commit the audit script and source note so others can reproduce the analysis using the EPA download.
 
 In our case, the download date is 11/17/2026
+
+### Reported health-based violations by system size
+
+![Observed and state-adjusted percentages of water systems flagged for a health-based violation, by population served. Both percentages were lower in larger size groups. Error bars show 95% confidence intervals for the adjusted estimates.](figures/violation-percentages-by-size.png)
+
+*Among systems that reported serving at least one person, the percentage flagged for a health-based violation was lower in each successively larger size group. The pattern held after accounting for differences across states. Open circles show observed percentages. Filled circles show state-adjusted estimates, and error bars show their 95% confidence intervals.*
+
+**Systems reporting zero people served.** Of the 17 systems in this group, none were flagged for a health-based violation (0 of 17, 0%).
