@@ -39,3 +39,5 @@ The regression will show whether patterns by system size persist after accountin
 3. In RStudio, count the rows and unique system IDs, check for duplicate or missing IDs, and tabulate all `HEALTH_FLAG` values, including missing values. Record the results before filtering or recoding.
 
 Keep the source ZIP and CSV local. Commit the audit script and source note so others can reproduce the analysis using the EPA download.
+
+In our case, the download date is 11/17/2026
