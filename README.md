@@ -49,3 +49,11 @@ In our case, the download date is 11/17/2026
 *Among systems that reported serving at least one person, the percentage flagged for a health-based violation was lower in each successively larger size group. The pattern held after accounting for differences across states. Open circles show observed percentages. Filled circles show state-adjusted estimates, and error bars show their 95% confidence intervals.*
 
 **Systems reporting zero people served.** Of the 17 systems in this group, none were flagged for a health-based violation (0 of 17, 0%).
+
+### Power BI dashboard
+
+![Power BI report showing violation percentages by system size, state-adjusted estimates with 95% confidence intervals, and a state-by-size matrix](figures/power-bi-dashboard.png)
+
+*The screenshot shows the all-eight-state view. The observed percentage was 3.05% (342 of 11,202 systems with a positive reported population and a known flag). In the Power BI report, the state slicer filters the observed results, and the adjusted chart shows estimates for all eight states.*
+
+**Systems reporting zero people served.** Across all eight states, 0 of 17 systems in this group were flagged.
