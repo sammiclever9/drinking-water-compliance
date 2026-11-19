@@ -57,3 +57,33 @@ In our case, the download date is 11/17/2026
 *The screenshot shows the all-eight-state view. The observed percentage was 3.05% (342 of 11,202 systems with a positive reported population and a known flag). In the Power BI report, the state slicer filters the observed results, and the adjusted chart shows estimates for all eight states.*
 
 **Systems reporting zero people served.** Across all eight states, 0 of 17 systems in this group were flagged.
+
+## Methods and limitations
+
+### Observed percentages
+
+The analysis includes active community water systems in Illinois, Indiana, Michigan, Minnesota, New York, Ohio, Pennsylvania, and Wisconsin. Each system contributes once. The observed percentage is the number flagged Yes for a reported health-based violation divided by the number with a Yes or No flag, multiplied by 100.
+
+The size analysis includes 11,202 systems with a positive reported population. Project-defined size groups are 1–1,000, 1,001–10,000, and more than 10,000 people served.
+
+### State adjustment and confidence intervals
+
+We fitted a logistic regression with violation flag as the outcome and size group and state as categorical predictors. The model allows baseline odds to differ across states and estimates a common size-group association across states.
+
+Adjusted percentages use direct standardization. For each size group, we predicted probabilities using the states of all 11,202 systems, then averaged those probabilities. Each adjusted estimate therefore uses the same state mix, weighted by the number of eligible systems in each state.
+
+The 95% confidence intervals were calculated using the delta method and the model coefficient covariance matrix, with limits transformed through the log-odds scale to stay between 0% and 100%. These are model-based intervals around each adjusted percentage, treating the state mix as fixed.
+
+### Limitations
+
+The results describe associations in a reporting snapshot. Reporting delays, incomplete records, and differences in reporting practices may affect comparisons. Adjustment accounts for state and size group, while other system characteristics may also influence violations.
+
+Observed patterns varied across states, and the fitted model assumes a common size-group association. The largest group had only 15 flagged systems. Its direct comparison with the middle group was uncertain (adjusted OR 0.605, 95% CI 0.345–1.060).
+
+The confidence intervals reflect uncertainty under the fitted model. Reporting errors, model misspecification, and variation in reporting practices require separate consideration.
+
+### Systems reporting zero people served
+
+Seventeen eligible systems reported a population of zero, and none were flagged (0 of 17). These systems appear in the descriptive state totals and a separate summary. The size-group regression and adjusted estimates use systems with a positive reported population.
+
+[EPA data dictionary](https://echo.epa.gov/tools/data-downloads/sdwa-facility-search-download-summary) · [EPA reporting caveats](https://echo.epa.gov/help/sdwa-faqs)
