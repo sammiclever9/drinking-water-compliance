@@ -1,4 +1,4 @@
-# Select the EPA CSV interactively or pass its path to Rscript
+# Select the EPA CSV interactively or pass its path to Rscript.
 args <- commandArgs(trailingOnly = TRUE)
 csv_path <- if (length(args) > 0) args[1] else file.choose()
 
@@ -500,3 +500,19 @@ write.csv(adjusted_size_ci, file.path(export_dir, "adjusted_by_size.csv"),
 # Export reported-zero results separately.
 write.csv(zero_size_summary, file.path(export_dir, "reported_zero_by_state.csv"),
           row.names = FALSE, na = "")
+
+
+# Record the input filename and its content fingerprint.
+dir.create("metadata", showWarnings = FALSE)
+
+input_record <- data.frame(
+  input_file = basename(csv_path),
+  md5 = unname(tools::md5sum(csv_path)),
+  rows = nrow(water),
+  columns = ncol(water)
+)
+
+write.csv(input_record, "metadata/input_file.csv", row.names = FALSE)
+
+# Record the R version, platform, and loaded packages.
+writeLines(capture.output(sessionInfo()), "metadata/session-info.txt")
