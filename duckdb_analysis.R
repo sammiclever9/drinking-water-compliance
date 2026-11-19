@@ -1,5 +1,6 @@
 # Install the local database and its R interface.
-install.packages(c("DBI", "duckdb"))
+# Run once in the console before using this script.
+# install.packages(c("DBI", "duckdb"))
 
 # Open an in-memory DuckDB database.
 library(DBI)
@@ -147,3 +148,72 @@ stopifnot(all(zero_comparison$matches))
 
 # Confirm both comparisons passed.
 message("R and SQL summaries match, including the separate reported-zero totals.")
+
+# Create a folder for SQL-generated outputs.
+sql_export_dir <- "sql_exports"
+dir.create(sql_export_dir, showWarnings = FALSE)
+
+# Export the three positive population size groups.
+write.csv(
+  sql_size_summary,
+  file.path(sql_export_dir, "observed_by_size_sql.csv"),
+  row.names = FALSE, na = ""
+)
+
+# Export reported-zero totals separately.
+write.csv(
+  sql_zero_summary,
+  file.path(sql_export_dir, "reported_zero_totals_sql.csv"),
+  row.names = FALSE, na = ""
+)
+
+# Record the positive-size checks by column.
+size_comparison_record <- data.frame(
+  column = names(size_checks),
+  matches = unname(size_checks)
+)
+
+write.csv(
+  size_comparison_record,
+  file.path(sql_export_dir, "r_vs_sql_size_checks.csv"),
+  row.names = FALSE
+)
+
+# Record the separate reported-zero comparisons.
+write.csv(
+  zero_comparison,
+  file.path(sql_export_dir, "r_vs_sql_zero_checks.csv"),
+  row.names = FALSE
+)
+
+# Print the folder containing the four exports.
+normalizePath(sql_export_dir, winslash = "/", mustWork = TRUE)
+
+
+# Create the SQL export folder.
+sql_export_dir <- "sql_exports"
+dir.create(sql_export_dir, showWarnings = FALSE)
+
+# Export positive-size results.
+write.csv(sql_size_summary,
+          file.path(sql_export_dir, "observed_by_size_sql.csv"),
+          row.names = FALSE, na = "")
+
+# Export reported-zero totals separately.
+write.csv(sql_zero_summary,
+          file.path(sql_export_dir, "reported_zero_totals_sql.csv"),
+          row.names = FALSE, na = "")
+
+# Export comparison records.
+write.csv(
+  data.frame(column = names(size_checks), matches = unname(size_checks)),
+  file.path(sql_export_dir, "r_vs_sql_size_checks.csv"),
+  row.names = FALSE
+)
+
+write.csv(zero_comparison,
+          file.path(sql_export_dir, "r_vs_sql_zero_checks.csv"),
+          row.names = FALSE, na = "")
+
+# Close the database connection.
+dbDisconnect(con, shutdown = TRUE)
