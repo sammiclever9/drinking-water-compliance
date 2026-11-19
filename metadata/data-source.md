@@ -11,7 +11,11 @@ Each row represents a public water system identified by PWSID. The analysis uses
 
 EPA defines health-based violations as violations of maximum contaminant levels, maximum residual disinfectant levels, or required treatment techniques. The download is refreshed weekly, while the underlying SDWIS data are updated quarterly.
 
-The download date identifies when this file was obtained. The precise reporting window for HEALTH_FLAG has not yet been independently confirmed for this release.
+The download date identifies when this file was obtained. EPA documents health-based violations under Latest Violation Status. That search uses unresolved violations from the latest compliance quarter or the last date the state reported activity, whichever is later. Based on the download field mapping and linked search documentation, we interpret HEALTH_FLAG as a latest reported compliance-status indicator.
+
+The exact calendar quarter represented by the November 17, 2026 download has not been independently verified. EPA notes that SDWIS compliance data can lag by three to six months.
+
+[Latest Violation Status definition](https://echo.epa.gov/help/facility-search/search-criteria-help)
 
 ## Reported-zero populations
 
