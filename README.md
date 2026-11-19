@@ -105,6 +105,29 @@ CSV percentages use a 0–100 scale. Blank percentages indicate a zero known-fla
 
 See the [data provenance note](metadata/data-source.md) for the source and reporting limitations, the [input-file record](metadata/input_file.csv) for the file fingerprint, and the [R session information](metadata/session-info.txt) for the software environment used.
 
+## Reproduce the DuckDB SQL comparison
+
+This local workflow uses R, DBI, and DuckDB.
+
+1. Install the required packages once in the RStudio console:
+
+   install.packages(c("DBI", "duckdb"))
+
+2. Run analysis.R to regenerate the R summaries.
+3. Open duckdb_analysis.R and set the working directory to its location.
+4. Click Source. At the three file prompts, select these files in order:
+   - The original SDWA_SYSTEM_SEARCH.csv.
+   - power_bi_exports/observed_by_size.csv.
+   - power_bi_exports/reported_zero_by_state.csv.
+
+The script queries the original EPA CSV, compares its SQL summaries with the R exports, and regenerates four files in sql_exports/. Successful comparisons produce the message “R and SQL summaries match, including the separate reported-zero totals.”
+
+### Reported-zero results
+
+Positive-size results are saved in observed_by_size_sql.csv. Reported-zero totals are saved separately in reported_zero_totals_sql.csv, with 0 flagged out of 17 systems in the published snapshot.
+
+[View the comparison results](metadata/r-vs-sql-validation.md)
+
 ### Reported-zero population results
 
 The published snapshot contained 17 systems reporting zero people served, with 0 flagged. These results are exported separately in `reported_zero_by_state.csv`. The positive-size summaries and regression use 11,202 systems with a positive reported population.
