@@ -84,6 +84,32 @@ The confidence intervals reflect uncertainty under the fitted model. Reporting e
 
 ### Systems reporting zero people served
 
+## Reproduce the analysis
+
+The script uses base R and requires no additional packages.
+
+1. Download and extract this repository using Code → Download ZIP.
+2. Download and extract `SDWA_SYSTEM_SEARCH.csv` from the EPA ECHO Drinking Water System Search dataset.
+3. Open `analysis.R` in RStudio.
+4. Choose Session → Set Working Directory → To Source File Location.
+5. Click Source and select the EPA CSV when prompted.
+
+The script regenerates the figure in `figures/` and these summary files in `power_bi_exports/`:
+
+- `observed_by_state.csv` — state totals, including systems reporting zero population.
+- `observed_by_size.csv` — the three positive population size groups.
+- `observed_by_state_and_size.csv` — positive size groups within each state.
+- `adjusted_by_size.csv` — state-adjusted percentages and 95% confidence limits.
+- `reported_zero_by_state.csv` — reported-zero population results by state.
+
+CSV percentages use a 0–100 scale. Blank percentages indicate a zero known-flag denominator. The published results used EPA data downloaded on November 17, 2026. Later releases may produce different results.
+
+### Reported-zero population results
+
+The published snapshot contained 17 systems reporting zero people served, with 0 flagged. These results are exported separately in `reported_zero_by_state.csv`. The positive-size summaries and regression use 11,202 systems with a positive reported population.
+
+[Download EPA data](https://echo.epa.gov/tools/data-downloads#drinking-water-data-downloads)
+
 Seventeen eligible systems reported a population of zero, and none were flagged (0 of 17). These systems appear in the descriptive state totals and a separate summary. The size-group regression and adjusted estimates use systems with a positive reported population.
 
 [EPA data dictionary](https://echo.epa.gov/tools/data-downloads/sdwa-facility-search-download-summary) · [EPA reporting caveats](https://echo.epa.gov/help/sdwa-faqs)
