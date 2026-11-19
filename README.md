@@ -148,4 +148,4 @@ The positive-size summaries and adjusted estimates cover 11,202 systems. The ove
 
 The state slicer filters the observed chart, cards, and matrix. The adjusted chart shows estimates standardized to the full eight-state mix.
 
-The reported-zero result appears in its own note. Across all eight states, 0 of 17 systems reporting zero people served were flagged.
+
