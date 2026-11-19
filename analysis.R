@@ -481,6 +481,43 @@ local({
     pch = c(1, 19), col = c("black", blue), bty = "n"
   )
 })
+
+
+# Require complete, unique identifiers and recognized flags.
+stopifnot(
+  !any(missing_id),
+  length(repeated_ids) == 0,
+  !any(flag_unexpected)
+)
+
+# Check that every eligible system has a population group.
+stopifnot(
+  !anyNA(water_eligible$size_group),
+  sum(size_counts) == nrow(water_eligible)
+)
+
+# Reconcile positive-size and reported-zero counts.
+stopifnot(
+  sum(positive_size_summary$known_flags) +
+    sum(zero_size_summary$known_flags) ==
+    sum(state_summary$known_flags),
+  sum(positive_size_summary$flagged_yes) +
+    sum(zero_size_summary$flagged_yes) ==
+    sum(state_summary$flagged_yes)
+)
+
+# Check model convergence and confidence interval bounds.
+stopifnot(
+  size_model$converged,
+  middle_ref_model$converged,
+  all(is.finite(as.matrix(adjusted_size_ci[2:4]))),
+  all(adjusted_size_ci$lower_95 <= adjusted_size_ci$adjusted_pct),
+  all(adjusted_size_ci$adjusted_pct <= adjusted_size_ci$upper_95)
+)
+
+message("Analysis checks passed.")
+
+
 # Export summaries for Power BI.
 export_dir <- "power_bi_exports"
 dir.create(export_dir, showWarnings = FALSE)
@@ -502,7 +539,7 @@ write.csv(zero_size_summary, file.path(export_dir, "reported_zero_by_state.csv")
           row.names = FALSE, na = "")
 
 
-# Record the input filename and its content fingerprint.
+# Record the input filename and its content fingerprint..
 dir.create("metadata", showWarnings = FALSE)
 
 input_record <- data.frame(
