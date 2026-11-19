@@ -82,7 +82,6 @@ Observed patterns varied across states, and the fitted model assumes a common si
 
 The confidence intervals reflect uncertainty under the fitted model. Reporting errors, model misspecification, and variation in reporting practices require separate consideration.
 
-### Systems reporting zero people served
 
 ## Reproduce the analysis
 
@@ -111,3 +110,12 @@ The published snapshot contained 17 systems reporting zero people served, with 0
 [Download EPA data](https://echo.epa.gov/tools/data-downloads#drinking-water-data-downloads)
 
 [EPA data dictionary](https://echo.epa.gov/tools/data-downloads/sdwa-facility-search-download-summary) · [EPA reporting caveats](https://echo.epa.gov/help/sdwa-faqs)
+
+
+## Explore the Power BI report
+
+Download [the Power BI report](power_bi/drinking-water-compliance.pbix) and open it in Power BI Desktop.
+
+The state slicer filters the observed chart, cards, and matrix. The adjusted chart shows estimates standardized to the full eight-state mix.
+
+The reported-zero result appears in its own note. Across all eight states, 0 of 17 systems reporting zero people served were flagged.
