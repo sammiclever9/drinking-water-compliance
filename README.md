@@ -151,3 +151,8 @@ The positive-size summaries and adjusted estimates cover 11,202 systems. The ove
 The state slicer filters the observed chart, cards, and matrix. The adjusted chart shows estimates standardized to the full eight-state mix.
 
 
+
+
+### Release validation
+
+The project author completed a fresh-download reproduction check of v1.0.0 on November 19, 2026, including the R analysis and Power BI refresh. See the [validation record](metadata/release-validation-v1.0.0.md) for the verified results and separate reported-zero summary.
