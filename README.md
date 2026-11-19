@@ -110,6 +110,4 @@ The published snapshot contained 17 systems reporting zero people served, with 0
 
 [Download EPA data](https://echo.epa.gov/tools/data-downloads#drinking-water-data-downloads)
 
-Seventeen eligible systems reported a population of zero, and none were flagged (0 of 17). These systems appear in the descriptive state totals and a separate summary. The size-group regression and adjusted estimates use systems with a positive reported population.
-
 [EPA data dictionary](https://echo.epa.gov/tools/data-downloads/sdwa-facility-search-download-summary) · [EPA reporting caveats](https://echo.epa.gov/help/sdwa-faqs)
