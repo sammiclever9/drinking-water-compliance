@@ -1,4 +1,4 @@
-# Select the EPA CSV interactively or pass its path to Rscript.
+# Select the EPA CSV interactively or pass its path to Rscript
 args <- commandArgs(trailingOnly = TRUE)
 csv_path <- if (length(args) > 0) args[1] else file.choose()
 
