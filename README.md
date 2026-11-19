@@ -103,6 +103,8 @@ The script regenerates the figure in `figures/` and these summary files in `powe
 
 CSV percentages use a 0–100 scale. Blank percentages indicate a zero known-flag denominator. The published results used EPA data downloaded on November 17, 2026. Later releases may produce different results.
 
+See the [data provenance note](metadata/data-source.md) for the source and reporting limitations, the [input-file record](metadata/input_file.csv) for the file fingerprint, and the [R session information](metadata/session-info.txt) for the software environment used.
+
 ### Reported-zero population results
 
 The published snapshot contained 17 systems reporting zero people served, with 0 flagged. These results are exported separately in `reported_zero_by_state.csv`. The positive-size summaries and regression use 11,202 systems with a positive reported population.
