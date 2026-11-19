@@ -190,30 +190,5 @@ write.csv(
 normalizePath(sql_export_dir, winslash = "/", mustWork = TRUE)
 
 
-# Create the SQL export folder.
-sql_export_dir <- "sql_exports"
-dir.create(sql_export_dir, showWarnings = FALSE)
-
-# Export positive-size results.
-write.csv(sql_size_summary,
-          file.path(sql_export_dir, "observed_by_size_sql.csv"),
-          row.names = FALSE, na = "")
-
-# Export reported-zero totals separately.
-write.csv(sql_zero_summary,
-          file.path(sql_export_dir, "reported_zero_totals_sql.csv"),
-          row.names = FALSE, na = "")
-
-# Export comparison records.
-write.csv(
-  data.frame(column = names(size_checks), matches = unname(size_checks)),
-  file.path(sql_export_dir, "r_vs_sql_size_checks.csv"),
-  row.names = FALSE
-)
-
-write.csv(zero_comparison,
-          file.path(sql_export_dir, "r_vs_sql_zero_checks.csv"),
-          row.names = FALSE, na = "")
-
 # Close the database connection.
 dbDisconnect(con, shutdown = TRUE)
