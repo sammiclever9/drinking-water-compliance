@@ -116,6 +116,36 @@ The published snapshot contained 17 systems reporting zero people served, with 0
 
 Download [the Power BI report](power_bi/drinking-water-compliance.pbix) and open it in Power BI Desktop.
 
+### Reconnect the CSV sources on another computer
+
+1. Download the repository using Code → Download ZIP and extract it.
+2. Open `power_bi/drinking-water-compliance.pbix` in Power BI Desktop.
+3. Select Home → Transform data.
+4. Select a query, then click the gear beside Source under Applied Steps.
+5. Browse to the matching CSV in the extracted repository’s `power_bi_exports` folder.
+6. Repeat for all five queries using the table below.
+7. Select Home → Close & Apply, then save the report.
+
+| Query | CSV in `power_bi_exports` |
+|---|---|
+| `observed_by_state` | `observed_by_state.csv` |
+| `observed_by_size` | `observed_by_size.csv` |
+| `observed_by_state_and_size` | `observed_by_state_and_size.csv` |
+| `adjusted_by_size` | `adjusted_by_size.csv` |
+| `reported_zero_by_state` | `reported_zero_by_state.csv` |
+
+If Source has no gear icon, select the Source step and enable View → Formula bar. Replace the old path inside `File.Contents("...")` with the full path to the matching CSV on your computer.
+
+After loading the CSVs, clear the state slicer. With the published summary files, the cards should show 3.05%, 342 flagged systems, and 11,202 systems with known flags. The adjusted chart should show 3.80%, 2.15%, and 1.31%.
+
+To refresh after rerunning `analysis.R`, reconnect to its regenerated CSVs if their location changed, then select Home → Refresh. Findings text and screenshots should also be reviewed when the data changes.
+
+### Check the reported-zero results
+
+`reported_zero_by_state.csv` remains a separate query with eight rows. In the published snapshot, it totals 0 flagged systems out of 17 systems reporting zero people served. These results appear in their own report note.
+
+The positive-size summaries and adjusted estimates cover 11,202 systems. The overall state summary includes all 11,219 eligible systems.
+
 The state slicer filters the observed chart, cards, and matrix. The adjusted chart shows estimates standardized to the full eight-state mix.
 
 The reported-zero result appears in its own note. Across all eight states, 0 of 17 systems reporting zero people served were flagged.
