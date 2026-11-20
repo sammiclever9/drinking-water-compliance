@@ -18,6 +18,24 @@ Querying the saved file returned 0 flagged systems, 17 unflagged systems, 17 kno
 
 [Reported-zero validation counts](../sql_exports/parquet_zero_validation.csv)
 
+## Record-level validation
+
+The project author compared each saved Parquet file with its corresponding cleaned source records across system ID, state, health flag, and population.
+
+### Positive-population records
+
+Bidirectional EXCEPT ALL comparisons returned 0 records missing from Parquet and 0 extra records in Parquet across 11,202 systems.
+
+[Positive-population record checks](../sql_exports/parquet_positive_record_checks.csv)
+
+### Reported-zero records
+
+A separate comparison returned 0 records missing from Parquet and 0 extra records in Parquet across the 17 systems reporting zero people served.
+
+[Reported-zero record checks](../sql_exports/parquet_zero_record_checks.csv)
+
+EXCEPT ALL comparisons preserve duplicate counts. All four fields and their record multiplicities matched between each Parquet file and its cleaned source.
+
 ## Reproduction
 
 Run duckdb_analysis.R from the repository root. The script generates both Parquet files in data/processed/, queries them, checks their counts, and exports the validation summaries to sql_exports/.
