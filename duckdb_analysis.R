@@ -367,6 +367,126 @@ writeLines(
   "metadata/duckdb-session-info.txt"
 )
 
+# Create a folder for cleaned system-level data.
+dir.create("data/processed", recursive = TRUE, showWarnings = FALSE)
+
+# Save positive whole-number populations as compressed Parquet.
+dbExecute(con, "
+  COPY (
+    SELECT * FROM eligible_water
+    WHERE population > 0
+      AND isfinite(population)
+      AND population = trunc(population)
+  )
+  TO 'data/processed/positive_population.parquet'
+  (FORMAT PARQUET, COMPRESSION ZSTD)
+")
+
+# Save reported-zero populations in their own Parquet file.
+dbExecute(con, "
+  COPY (
+    SELECT * FROM eligible_water
+    WHERE population = 0
+  )
+  TO 'data/processed/reported_zero_population.parquet'
+  (FORMAT PARQUET, COMPRESSION ZSTD)
+")
+
+# Verify the two files can be read back.
+parquet_counts <- dbGetQuery(con, "
+  SELECT 'Positive population' AS population_group, COUNT(*) AS systems
+  FROM read_parquet('data/processed/positive_population.parquet')
+  UNION ALL
+  SELECT 'Reported zero population', COUNT(*)
+  FROM read_parquet('data/processed/reported_zero_population.parquet')
+")
+
+parquet_counts
+
+# Count known and missing flags in the positive-population file.
+parquet_positive <- dbGetQuery(con, "
+  SELECT
+    COUNT(*) AS systems,
+    COUNT(*) FILTER (WHERE health_flag = 'Yes') AS flagged_yes,
+    COUNT(*) FILTER (WHERE health_flag = 'No') AS flagged_no,
+    COUNT(*) FILTER (WHERE health_flag IN ('Yes', 'No')) AS known_flags,
+    COUNT(*) FILTER (
+      WHERE health_flag IS NULL OR health_flag = ''
+    ) AS missing
+  FROM read_parquet('data/processed/positive_population.parquet')
+")
+
+parquet_positive
+
+# Count flags separately for systems reporting zero people served.
+parquet_zero <- dbGetQuery(con, "
+  SELECT
+    COUNT(*) AS systems,
+    COUNT(*) FILTER (WHERE health_flag = 'Yes') AS flagged_yes,
+    COUNT(*) FILTER (WHERE health_flag = 'No') AS flagged_no,
+    COUNT(*) FILTER (WHERE health_flag IN ('Yes', 'No')) AS known_flags,
+    COUNT(*) FILTER (
+      WHERE health_flag IS NULL OR health_flag = ''
+    ) AS missing
+  FROM read_parquet('data/processed/reported_zero_population.parquet')
+")
+
+parquet_zero
+
+# Reconcile positive-population counts with the SQL size summary.
+stopifnot(
+  parquet_positive$systems ==
+    parquet_positive$known_flags + parquet_positive$missing,
+  parquet_positive$flagged_yes == sum(sql_size_summary$flagged_yes),
+  parquet_positive$flagged_no == sum(sql_size_summary$flagged_no),
+  parquet_positive$known_flags == sum(sql_size_summary$known_flags),
+  parquet_positive$missing == 0
+)
+
+# Reconcile reported-zero counts with their separate SQL summary.
+stopifnot(
+  parquet_zero$systems == sql_zero_summary$systems,
+  parquet_zero$flagged_yes == sql_zero_summary$flagged_yes,
+  parquet_zero$known_flags == sql_zero_summary$known_flags,
+  parquet_zero$flagged_no == parquet_zero$known_flags - parquet_zero$flagged_yes,
+  parquet_zero$missing == 0
+)
+
+message("Parquet violation counts match the separate SQL summaries.")
+
+# Save positive-population Parquet validation counts.
+write.csv(
+  parquet_positive,
+  file.path(sql_export_dir, "parquet_positive_validation.csv"),
+  row.names = FALSE
+)
+
+# Save reported-zero Parquet validation counts separately.
+write.csv(
+  parquet_zero,
+  file.path(sql_export_dir, "parquet_zero_validation.csv"),
+  row.names = FALSE
+)
+
+# Read both validation files back.
+saved_positive <- read.csv(
+  file.path(sql_export_dir, "parquet_positive_validation.csv")
+)
+saved_zero <- read.csv(
+  file.path(sql_export_dir, "parquet_zero_validation.csv")
+)
+
+# Confirm the saved counts match the checked Parquet results.
+stopifnot(
+  isTRUE(all.equal(saved_positive, parquet_positive,
+                   check.attributes = FALSE)),
+  isTRUE(all.equal(saved_zero, parquet_zero,
+                   check.attributes = FALSE))
+)
+
+message("Parquet validation exports verified.")
+
+
 
 # Close the database connection.
 dbDisconnect(con, shutdown = TRUE)
