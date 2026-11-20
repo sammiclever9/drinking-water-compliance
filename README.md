@@ -234,3 +234,23 @@ The project author also completed a fresh-download check of the local DuckDB ext
 
 
 The project author completed a fresh-download check of the Parquet extension in preparation for v1.2.0, regenerating 10 SQL CSV exports and two Parquet files. See the [preparation check](metadata/release-validation-v1.2.0.md), including the separate reported-zero results.
+
+
+## Run the complete local pipeline
+
+Install DBI and duckdb once in RStudio. In PowerShell, open the repository folder and run:
+
+```powershell
+# Replace both paths with your local locations.
+.\run_pipeline.ps1 -CsvPath 'C:/path/to/SDWA_SYSTEM_SEARCH.csv' -RscriptPath 'C:/path/to/Rscript.exe'
+```
+
+The runner regenerates the R summaries, SQL exports, Parquet files, figure, and metadata. Refresh Power BI afterward.
+
+[Repeatability check](metadata/pipeline-repeatability.md)
+
+### Reported-zero results
+
+Reported-zero outputs remain separate, with 0 of 17 flagged in the published snapshot.
+
+
