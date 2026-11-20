@@ -486,6 +486,100 @@ stopifnot(
 
 message("Parquet validation exports verified.")
 
+# Compare every positive-population record in both directions.
+positive_record_check <- dbGetQuery(con, "
+  WITH expected AS (
+    SELECT system_id, state, health_flag, population
+    FROM eligible_water
+    WHERE population > 0
+      AND isfinite(population)
+      AND population = trunc(population)
+  ),
+  saved AS (
+    SELECT system_id, state, health_flag, population
+    FROM read_parquet('data/processed/positive_population.parquet')
+  )
+  SELECT
+    (SELECT COUNT(*) FROM (
+      SELECT * FROM expected EXCEPT ALL SELECT * FROM saved
+    )) AS missing_from_parquet,
+    (SELECT COUNT(*) FROM (
+      SELECT * FROM saved EXCEPT ALL SELECT * FROM expected
+    )) AS extra_in_parquet
+")
+
+positive_record_check
+
+# Compare every reported-zero record in both directions.
+zero_record_check <- dbGetQuery(con, "
+  WITH expected AS (
+    SELECT system_id, state, health_flag, population
+    FROM eligible_water
+    WHERE population = 0
+  ),
+  saved AS (
+    SELECT system_id, state, health_flag, population
+    FROM read_parquet('data/processed/reported_zero_population.parquet')
+  )
+  SELECT
+    (SELECT COUNT(*) FROM (
+      SELECT * FROM expected EXCEPT ALL SELECT * FROM saved
+    )) AS missing_from_parquet,
+    (SELECT COUNT(*) FROM (
+      SELECT * FROM saved EXCEPT ALL SELECT * FROM expected
+    )) AS extra_in_parquet
+")
+
+zero_record_check
+
+# Require zero missing or extra records in either population group.
+stopifnot(
+  all(positive_record_check == 0),
+  all(zero_record_check == 0)
+)
+
+message("Both Parquet files match their source records exactly.")
+
+# Require exact agreement before exporting the checks.
+stopifnot(
+  all(as.matrix(positive_record_check) == 0),
+  all(as.matrix(zero_record_check) == 0)
+)
+
+# Export positive-population record checks.
+write.csv(
+  positive_record_check,
+  file.path(sql_export_dir, "parquet_positive_record_checks.csv"),
+  row.names = FALSE
+)
+
+# Export reported-zero record checks separately.
+write.csv(
+  zero_record_check,
+  file.path(sql_export_dir, "parquet_zero_record_checks.csv"),
+  row.names = FALSE
+)
+
+# Read back both record-check exports.
+saved_positive_records <- read.csv(
+  file.path(sql_export_dir, "parquet_positive_record_checks.csv")
+)
+saved_zero_records <- read.csv(
+  file.path(sql_export_dir, "parquet_zero_record_checks.csv")
+)
+
+# Check that each file contains one row with two zero counts.
+stopifnot(
+  nrow(saved_positive_records) == 1,
+  ncol(saved_positive_records) == 2,
+  all(as.matrix(saved_positive_records) == 0),
+  nrow(saved_zero_records) == 1,
+  ncol(saved_zero_records) == 2,
+  all(as.matrix(saved_zero_records) == 0)
+)
+
+message("Parquet record-check exports verified.")
+
 
 
 # Close the database connection.
