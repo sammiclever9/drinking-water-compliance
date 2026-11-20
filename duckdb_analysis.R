@@ -7,7 +7,9 @@ library(DBI)
 con <- dbConnect(duckdb::duckdb(), dbdir = ":memory:")
 
 # Select the source CSV and quote its path safely for SQL.
-csv_path <- file.choose()
+# Accept a command-line path or use the interactive picker.
+args <- commandArgs(trailingOnly = TRUE)
+csv_path <- if (length(args) > 0) args[1] else file.choose()
 sql_path <- as.character(dbQuoteString(con, csv_path))
 
 # Load all columns as text to preserve the original codes.
