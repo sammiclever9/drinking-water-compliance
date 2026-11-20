@@ -127,8 +127,6 @@ The script automatically reads these R summaries from `power_bi_exports/` in the
 
 Run `analysis.R` first so these comparison files are available.
 
-This file must be present before running the DuckDB script.
-
 The script queries the original EPA CSV and compares its SQL summaries with the R exports. The state-by-size comparison matches all 24 rows on both state and size group, checks for unique matching keys, and compares five numeric columns. Counts must match exactly; rounded percentages use a tolerance of 1e-10.
 
 Successful runs print these messages:
@@ -139,7 +137,7 @@ Successful runs print these messages:
 
 ### SQL outputs and comparison records
 
-The script regenerates six files in `sql_exports/`:
+The script regenerates ten files in `sql_exports/`:
 
 | File | Data rows | Contents |
 |---|---:|---|
@@ -149,7 +147,27 @@ The script regenerates six files in `sql_exports/`:
 | `r_vs_sql_state_size_checks.csv` | 5 | State-by-size column comparisons |
 | `reported_zero_totals_sql.csv` | 1 | Separate reported-zero totals |
 | `r_vs_sql_zero_checks.csv` | 3 | Separate reported-zero metric comparisons |
+| `parquet_positive_validation.csv` | 1 | Positive-population Parquet counts |
+| `parquet_zero_validation.csv` | 1 | Reported-zero Parquet counts |
+| `parquet_positive_record_checks.csv` | 1 | Positive-population record comparisons |
+| `parquet_zero_record_checks.csv` | 1 | Reported-zero record comparisons |
 
+### Parquet outputs and validation
+
+Running duckdb_analysis.R also generates two ZSTD-compressed Parquet files locally in data/processed/:
+
+- positive_population.parquet contains 11,202 systems with positive whole-number populations.
+- reported_zero_population.parquet contains 17 systems reporting zero people served.
+
+Both files contain system ID, state, health flag, and population. The script queries the saved files and checks their violation counts against the SQL summaries.
+
+Bidirectional EXCEPT ALL comparisons check every record across all four fields, preserving duplicate counts. Both files returned 0 missing and 0 extra records.
+
+[View Parquet validation](metadata/parquet-validation.md)
+
+### Reported-zero Parquet results
+
+Reported-zero populations have their own Parquet file and validation exports. The published snapshot contains 0 flagged systems out of 17, with 0 missing flags.
 The positive-size summaries total 342 flagged systems out of 11,202 known flags in the published snapshot. All comparison records contain TRUE for the published inputs.
 
 ### Reported-zero SQL results
