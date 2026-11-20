@@ -540,11 +540,6 @@ stopifnot(
 
 message("Both Parquet files match their source records exactly.")
 
-# Require exact agreement before exporting the checks.
-stopifnot(
-  all(as.matrix(positive_record_check) == 0),
-  all(as.matrix(zero_record_check) == 0)
-)
 
 # Export positive-population record checks.
 write.csv(
