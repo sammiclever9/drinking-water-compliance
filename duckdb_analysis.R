@@ -88,7 +88,14 @@ sql_zero_summary <- dbGetQuery(con, "
 sql_zero_summary
 
 # Select the exported R summary for positive size groups.
-r_size_summary <- read.csv(file.choose(), stringsAsFactors = FALSE)
+# r_size_summary <- read.csv(file.choose(), stringsAsFactors = FALSE)
+
+# Load the R positive-size summary.
+r_size_summary <- read.csv(
+  file.path("power_bi_exports", "observed_by_size.csv"),
+  stringsAsFactors = FALSE
+)
+
 
 # Align the R rows with the SQL size-group order.
 stopifnot(
@@ -114,7 +121,12 @@ size_checks
 stopifnot(all(size_checks))
 
 # Load the separate reported-zero results by state.
-r_zero_summary <- read.csv(file.choose(), stringsAsFactors = FALSE)
+# r_zero_summary <- read.csv(file.choose(), stringsAsFactors = FALSE)
+# Load the separate R reported-zero summary.
+r_zero_summary <- read.csv(
+  file.path("power_bi_exports", "reported_zero_by_state.csv"),
+  stringsAsFactors = FALSE
+)
 
 # Confirm the file contains the reported-zero category.
 stopifnot(
