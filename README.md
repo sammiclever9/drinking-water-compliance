@@ -209,3 +209,6 @@ The state slicer filters the observed chart, cards, and matrix. The adjusted cha
 ### Release validation
 
 The project author completed a fresh-download reproduction check of v1.0.0 on November 19, 2026, including the R analysis and Power BI refresh. See the [validation record](metadata/release-validation-v1.0.0.md) for the verified results and separate reported-zero summary.
+
+
+The project author also completed a fresh-download check of the local DuckDB extension in preparation for v1.1.0. See the [validation record](metadata/release-validation-v1.1.0.md), including the separate reported-zero comparisons.
