@@ -231,3 +231,6 @@ The project author completed a fresh-download reproduction check of v1.0.0 on No
 
 
 The project author also completed a fresh-download check of the local DuckDB extension in preparation for v1.1.0. See the [validation record](metadata/release-validation-v1.1.0.md), including the separate reported-zero comparisons.
+
+
+The project author completed a fresh-download check of the Parquet extension in preparation for v1.2.0, regenerating 10 SQL CSV exports and two Parquet files. See the [preparation check](metadata/release-validation-v1.2.0.md), including the separate reported-zero results.
