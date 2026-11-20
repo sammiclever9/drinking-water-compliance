@@ -127,7 +127,7 @@ The script automatically reads these R summaries from `power_bi_exports/` in the
 
 Run `analysis.R` first so these comparison files are available.
 
-The script reads `power_bi_exports/observed_by_state_and_size.csv` directly from the working directory. This file must be present before running the DuckDB script.
+This file must be present before running the DuckDB script.
 
 The script queries the original EPA CSV and compares its SQL summaries with the R exports. The state-by-size comparison matches all 24 rows on both state and size group, checks for unique matching keys, and compares five numeric columns. Counts must match exactly; rounded percentages use a tolerance of 1e-10.
 
