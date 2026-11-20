@@ -117,10 +117,15 @@ This local workflow uses R, DBI, and DuckDB.
 
 2. Run `analysis.R` to regenerate the R summaries.
 3. Open `duckdb_analysis.R` and set the working directory to its location.
-4. Click Source. At the three file prompts, select these files in order:
-   - The original `SDWA_SYSTEM_SEARCH.csv`.
-   - `power_bi_exports/observed_by_size.csv`.
-   - `power_bi_exports/reported_zero_by_state.csv`.
+4. Click Source and select the original `SDWA_SYSTEM_SEARCH.csv` at the single file prompt.
+
+The script automatically reads these R summaries from `power_bi_exports/` in the working directory:
+
+- `observed_by_size.csv`
+- `observed_by_state_and_size.csv`
+- `reported_zero_by_state.csv`
+
+Run `analysis.R` first so these comparison files are available.
 
 The script reads `power_bi_exports/observed_by_state_and_size.csv` directly from the working directory. This file must be present before running the DuckDB script.
 
