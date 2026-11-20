@@ -111,20 +111,45 @@ This local workflow uses R, DBI, and DuckDB.
 
 1. Install the required packages once in the RStudio console:
 
+   ```r
    install.packages(c("DBI", "duckdb"))
+   ```
 
-2. Run analysis.R to regenerate the R summaries.
-3. Open duckdb_analysis.R and set the working directory to its location.
+2. Run `analysis.R` to regenerate the R summaries.
+3. Open `duckdb_analysis.R` and set the working directory to its location.
 4. Click Source. At the three file prompts, select these files in order:
-   - The original SDWA_SYSTEM_SEARCH.csv.
-   - power_bi_exports/observed_by_size.csv.
-   - power_bi_exports/reported_zero_by_state.csv.
+   - The original `SDWA_SYSTEM_SEARCH.csv`.
+   - `power_bi_exports/observed_by_size.csv`.
+   - `power_bi_exports/reported_zero_by_state.csv`.
 
-The script queries the original EPA CSV, compares its SQL summaries with the R exports, and regenerates four files in sql_exports/. Successful comparisons produce the message “R and SQL summaries match, including the separate reported-zero totals.”
+The script reads `power_bi_exports/observed_by_state_and_size.csv` directly from the working directory. This file must be present before running the DuckDB script.
 
-### Reported-zero results
+The script queries the original EPA CSV and compares its SQL summaries with the R exports. The state-by-size comparison matches all 24 rows on both state and size group, checks for unique matching keys, and compares five numeric columns. Counts must match exactly; rounded percentages use a tolerance of 1e-10.
 
-Positive-size results are saved in observed_by_size_sql.csv. Reported-zero totals are saved separately in reported_zero_totals_sql.csv, with 0 flagged out of 17 systems in the published snapshot.
+Successful runs print these messages:
+
+- `R and SQL summaries match, including the separate reported-zero totals.`
+- `All 24 state-by-size rows match the R summary.`
+- `State-by-size SQL exports verified.`
+
+### SQL outputs and comparison records
+
+The script regenerates six files in `sql_exports/`:
+
+| File | Data rows | Contents |
+|---|---:|---|
+| `observed_by_size_sql.csv` | 3 | Positive population size groups |
+| `r_vs_sql_size_checks.csv` | 4 | Size-summary column comparisons |
+| `observed_by_state_and_size_sql.csv` | 24 | Positive size groups within each state |
+| `r_vs_sql_state_size_checks.csv` | 5 | State-by-size column comparisons |
+| `reported_zero_totals_sql.csv` | 1 | Separate reported-zero totals |
+| `r_vs_sql_zero_checks.csv` | 3 | Separate reported-zero metric comparisons |
+
+The positive-size summaries total 342 flagged systems out of 11,202 known flags in the published snapshot. All comparison records contain TRUE for the published inputs.
+
+### Reported-zero SQL results
+
+Reported-zero totals are saved in `reported_zero_totals_sql.csv`, with 0 flagged out of 17 systems in the published snapshot. Their comparisons are recorded separately in `r_vs_sql_zero_checks.csv`.
 
 [View the comparison results](metadata/r-vs-sql-validation.md)
 
