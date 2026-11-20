@@ -333,6 +333,27 @@ stopifnot(
 
 message("State-by-size SQL exports verified.")
 
+# Record the R interface and database engine versions.
+dir.create("metadata", showWarnings = FALSE)
+
+duckdb_environment <- data.frame(
+  R = R.version.string,
+  DBI = as.character(packageVersion("DBI")),
+  duckdb_package = as.character(packageVersion("duckdb")),
+  duckdb_engine = dbGetQuery(con, "SELECT version() AS version")$version
+)
+
+write.csv(
+  duckdb_environment,
+  "metadata/duckdb-environment.csv",
+  row.names = FALSE
+)
+
+# Save session details for the DuckDB workflow.
+writeLines(
+  capture.output(sessionInfo()),
+  "metadata/duckdb-session-info.txt"
+)
 
 
 # Close the database connection.
