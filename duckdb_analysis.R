@@ -189,6 +189,151 @@ write.csv(
 # Print the folder containing the four exports.
 normalizePath(sql_export_dir, winslash = "/", mustWork = TRUE)
 
+# Summarize positive population groups within each state.
+sql_state_size_summary <- dbGetQuery(con, "
+  WITH grouped AS (
+    SELECT
+      state,
+      CASE
+        WHEN population <= 1000 THEN '1-1,000'
+        WHEN population <= 10000 THEN '1,001-10,000'
+        ELSE 'More than 10,000'
+      END AS size_group,
+      health_flag
+    FROM eligible_water
+    WHERE population > 0
+      AND isfinite(population)
+      AND population = trunc(population)
+  ),
+  counts AS (
+    SELECT
+      state,
+      size_group,
+      SUM(CASE WHEN health_flag = 'Yes' THEN 1 ELSE 0 END) AS flagged_yes,
+      SUM(CASE WHEN health_flag = 'No' THEN 1 ELSE 0 END) AS flagged_no,
+      SUM(CASE WHEN health_flag IS NULL OR health_flag = ''
+          THEN 1 ELSE 0 END) AS missing
+    FROM grouped
+    GROUP BY state, size_group
+  )
+  SELECT
+    state,
+    size_group,
+    flagged_yes,
+    flagged_no,
+    missing,
+    flagged_yes + flagged_no AS known_flags,
+    ROUND(100.0 * flagged_yes /
+      NULLIF(flagged_yes + flagged_no, 0), 2) AS pct_flagged
+  FROM counts
+  ORDER BY state, CASE size_group
+    WHEN '1-1,000' THEN 1
+    WHEN '1,001-10,000' THEN 2
+    ELSE 3
+  END
+")
+
+sql_state_size_summary
+
+# Check the state-by-size summary against the earlier totals.
+c(
+  rows = nrow(sql_state_size_summary),
+  flagged = sum(sql_state_size_summary$flagged_yes),
+  known_flags = sum(sql_state_size_summary$known_flags),
+  missing = sum(sql_state_size_summary$missing)
+)
+
+# Load the R state-by-size summary.
+r_state_size <- read.csv(
+  file.path("power_bi_exports", "observed_by_state_and_size.csv"),
+  stringsAsFactors = FALSE
+)
+
+# Build matching keys from state and size group.
+sql_keys <- paste(
+  sql_state_size_summary$state,
+  sql_state_size_summary$size_group,
+  sep = "|"
+)
+r_keys <- paste(r_state_size$state, r_state_size$size_group, sep = "|")
+
+# Require unique keys and the same state-size combinations.
+stopifnot(
+  nrow(sql_state_size_summary) == 24,
+  nrow(r_state_size) == 24,
+  !anyDuplicated(sql_keys),
+  !anyDuplicated(r_keys),
+  setequal(sql_keys, r_keys)
+)
+
+# Put the R rows in the same order as the SQL rows.
+r_state_size_aligned <- r_state_size[match(sql_keys, r_keys), ]
+
+# Compare counts exactly and rounded percentages within tolerance.
+count_columns <- c("flagged_yes", "flagged_no", "missing", "known_flags")
+
+state_size_checks <- vapply(count_columns, function(column) {
+  identical(
+    as.numeric(sql_state_size_summary[[column]]),
+    as.numeric(r_state_size_aligned[[column]])
+  )
+}, logical(1))
+
+state_size_checks["pct_flagged"] <- isTRUE(all.equal(
+  as.numeric(sql_state_size_summary$pct_flagged),
+  as.numeric(r_state_size_aligned$pct_flagged),
+  tolerance = 1e-10
+))
+
+state_size_checks
+stopifnot(all(state_size_checks))
+
+# Check the existing reported-zero totals separately.
+zero_comparison
+stopifnot(all(zero_comparison$matches))
+
+message("All 24 state-by-size rows match the R summary.")
+
+# Export positive population groups within each state.
+write.csv(
+  sql_state_size_summary,
+  file.path(sql_export_dir, "observed_by_state_and_size_sql.csv"),
+  row.names = FALSE, na = ""
+)
+
+# Record which state-by-size columns matched the R results.
+state_size_check_record <- data.frame(
+  column = names(state_size_checks),
+  matches = unname(state_size_checks)
+)
+
+write.csv(
+  state_size_check_record,
+  file.path(sql_export_dir, "r_vs_sql_state_size_checks.csv"),
+  row.names = FALSE
+)
+
+# Read the new exports back from disk.
+saved_state_size <- read.csv(
+  file.path(sql_export_dir, "observed_by_state_and_size_sql.csv")
+)
+saved_checks <- read.csv(
+  file.path(sql_export_dir, "r_vs_sql_state_size_checks.csv")
+)
+
+# Confirm row counts, totals, and successful comparisons.
+stopifnot(
+  nrow(saved_state_size) == 24,
+  sum(saved_state_size$flagged_yes) == 342,
+  sum(saved_state_size$known_flags) == 11202,
+  sum(saved_state_size$missing) == 0,
+  nrow(saved_checks) == 5,
+  all(saved_checks$matches)
+)
+
+message("State-by-size SQL exports verified.")
+
+
 
 # Close the database connection.
 dbDisconnect(con, shutdown = TRUE)
