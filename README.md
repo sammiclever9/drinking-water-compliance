@@ -152,6 +152,8 @@ The script regenerates ten files in `sql_exports/`:
 | `parquet_positive_record_checks.csv` | 1 | Positive-population record comparisons |
 | `parquet_zero_record_checks.csv` | 1 | Reported-zero record comparisons |
 
+The positive-size summaries total 342 flagged systems out of 11,202 known flags in the published snapshot. R-versus-SQL comparison files contain TRUE for matching results. Parquet record-check files contain 0 missing and 0 extra records.
+
 ### Parquet outputs and validation
 
 Running duckdb_analysis.R also generates two ZSTD-compressed Parquet files locally in data/processed/:
@@ -168,7 +170,6 @@ Bidirectional EXCEPT ALL comparisons check every record across all four fields, 
 ### Reported-zero Parquet results
 
 Reported-zero populations have their own Parquet file and validation exports. The published snapshot contains 0 flagged systems out of 17, with 0 missing flags.
-The positive-size summaries total 342 flagged systems out of 11,202 known flags in the published snapshot. All comparison records contain TRUE for the published inputs.
 
 ### Reported-zero SQL results
 
