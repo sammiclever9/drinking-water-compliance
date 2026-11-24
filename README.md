@@ -245,6 +245,18 @@ Install DBI and duckdb once in RStudio. In PowerShell, open the repository folde
 .\run_pipeline.ps1 -CsvPath 'C:/path/to/SDWA_SYSTEM_SEARCH.csv' -RscriptPath 'C:/path/to/Rscript.exe'
 ```
 
+
+If a downloaded runner is blocked as unsigned under RemoteSigned, review `run_pipeline.ps1`, then unblock that specific file in the project folder:
+
+```powershell
+# Remove the download block from the reviewed runner.
+Unblock-File -LiteralPath .\run_pipeline.ps1
+```
+
+If script execution is disabled in the current session, use `Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned` before running the command. Organization-managed policies may take precedence.
+
+[Two-run v1.3.0 preparation check](metadata/release-validation-v1.3.0.md)
+
 The runner regenerates the R summaries, SQL exports, Parquet files, figure, and metadata. Refresh Power BI afterward.
 
 [Repeatability check](metadata/pipeline-repeatability.md)
